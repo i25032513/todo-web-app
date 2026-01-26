@@ -46,9 +46,18 @@ body {
     transition: 0.3s;
 }
 
-.sidebar ul li a:hover {
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
     background: #dfe7d3;
     color: #4a5d23;
+}
+
+.user-info {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    font-size: 13px;
+    color: #666;
 }
 
 /* Main Content */
