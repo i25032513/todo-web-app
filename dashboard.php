@@ -24,37 +24,7 @@ $recent_tasks = $conn->query("SELECT * FROM tasks WHERE user_id = $user_id AND i
     <meta charset="UTF-8">
     <title>ToDo Student | Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
 
-        .stat-card {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .stat-card h2 {
-            font-size: 36px;
-            margin-bottom: 5px;
-            color: #4a5d23;
-        }
-
-        .stat-card p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .stat-card.overdue h2 {
-            color: #e74c3c;
-        }
-    </style>
 </head>
 
 <body>

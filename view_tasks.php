@@ -55,75 +55,7 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
     <meta charset="UTF-8">
     <title>ToDo Student | View Tasks</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .filters {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
 
-        .filters select {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-        .sticky-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .sticky-actions a,
-        .sticky-actions button {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .sticky-actions a {
-            background: #4a5d23;
-            color: white;
-        }
-
-        .sticky-actions .delete-btn {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .sticky-actions .archive-btn {
-            background: #3498db;
-            color: white;
-        }
-
-        .priority-badge {
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            background: #ddd;
-        }
-
-        .priority-badge.high {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .priority-badge.medium {
-            background: #f39c12;
-            color: white;
-        }
-
-        .priority-badge.low {
-            background: #2ecc71;
-            color: white;
-        }
-    </style>
 </head>
 
 <body>
@@ -173,7 +105,7 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
                     <option value="title" <?php echo $sort_by == 'title' ? 'selected' : ''; ?>>Sort by Title</option>
                 </select>
                 <button type="submit" class="btn">Apply</button>
-                <a href="view_tasks.php" style="color: #666; font-size: 14px;">Clear</a>
+                <a href="view_tasks.php" class="btn btn-secondary">Clear</a>
             </form>
 
             <?php if ($tasks->num_rows > 0): ?>

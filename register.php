@@ -69,7 +69,7 @@ if (isset($_POST['register'])) {
                 <h3>Create an Account</h3>
             </div>
 
-            <div class="card" style="max-width: 400px;">
+            <div class="card auth-card">
                 <?php if ($error): ?>
                     <p style="color: red; margin-bottom: 15px;"><?php echo $error; ?></p>
                 <?php endif; ?>
