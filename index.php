@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// Optional: if user already logged in, go straight to dashboard
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,16 +61,8 @@
 
 <div class="wrapper">
 
-    <!-- Sidebar (simple for homepage) -->
-    <div class="sidebar">
-        <h2>ToDo Student</h2>
-        <ul>
-            <li><a href="index.php">Home</a></li>
-            <li><a href="login.php">Login</a></li>
-            <li><a href="register.php">Register</a></li>
-            <li><a href="about.php">About</a></li>
-        </ul>
-    </div>
+    <!-- Sidebar (auto switches via session) -->
+    <?php include 'sidebar.php'; ?>
 
     <!-- Main Content -->
     <div class="main">
@@ -69,9 +70,11 @@
         <div class="hero">
             <h1>Manage Your University Tasks Easily</h1>
             <p>
-                ToDo Student helps you organize assignments, discussions, club activities, and exams
-                in one professional platform. Plan better, submit on time, and reduce stress.
+                ToDo Student helps you organize assignments, discussions, club activities,
+                and examinations in one professional platform. Plan better, submit on time,
+                and reduce stress.
             </p>
+
             <a href="register.php" class="btn">Get Started</a>
             <a href="login.php" class="btn">Login</a>
         </div>
@@ -85,7 +88,7 @@
 
             <div class="card">
                 <h4>Task Monitoring</h4>
-                <p>View tasks with filters by category, priority, and due date.</p>
+                <p>View tasks in a structured layout with filtering options.</p>
             </div>
 
             <div class="card">

@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3307
--- Generation Time: Jan 26, 2026 at 01:49 PM
+-- Host: 127.0.0.1:3306
+-- Generation Time: Jan 27, 2026 at 12:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Database: `todo_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sticky_notes`
+--
+
+CREATE TABLE `sticky_notes` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `content` text NOT NULL,
+  `color` varchar(20) DEFAULT 'yellow',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sticky_notes`
+--
+
+INSERT INTO `sticky_notes` (`id`, `user_id`, `title`, `content`, `color`, `created_at`) VALUES
+(1, 1, 'assignment', '2/4/2026 due', 'yellow', '2026-01-27 11:33:41');
 
 -- --------------------------------------------------------
 
@@ -54,8 +76,21 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `password`) VALUES
+(1, 'foo wan yin', 'foowanyin001@gmail.com', '$2y$10$u1HAkw/IKNV1PLSqboNKwulAeDDotRw30Ce8/rxLQCpWjCJVIpzDu');
+
+--
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `sticky_notes`
+--
+ALTER TABLE `sticky_notes`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `tasks`
@@ -75,6 +110,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `sticky_notes`
+--
+ALTER TABLE `sticky_notes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
@@ -84,7 +125,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
