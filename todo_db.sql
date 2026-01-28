@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 27, 2026 at 12:44 PM
+-- Generation Time: Jan 28, 2026 at 04:02 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,8 @@ CREATE TABLE `sticky_notes` (
 --
 
 INSERT INTO `sticky_notes` (`id`, `user_id`, `title`, `content`, `color`, `created_at`) VALUES
-(1, 1, 'assignment', '2/4/2026 due', 'yellow', '2026-01-27 11:33:41');
+(1, 1, 'assignment', '2/4/2026 due', 'yellow', '2026-01-27 11:33:41'),
+(4, 1, 'maths', '3/4 due', 'blue', '2026-01-27 14:26:35');
 
 -- --------------------------------------------------------
 
@@ -62,6 +63,16 @@ CREATE TABLE `tasks` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `tasks`
+--
+
+INSERT INTO `tasks` (`id`, `user_id`, `title`, `description`, `due_date`, `category`, `priority`, `status`, `is_archived`, `created_at`) VALUES
+(1, 1, 'Math assignment', '2/3 due', '2026-01-29', 'Assignment', 'Medium', 'Pending', 0, '2026-01-27 13:54:52'),
+(2, 1, 'software engineering', 'assignment 1', '2026-02-04', 'Assignment', 'High', 'Pending', 0, '2026-01-27 14:29:26'),
+(3, 1, 'web programming', 'to do website', '2026-02-01', 'Discussion', 'Medium', 'Pending', 0, '2026-01-27 14:31:01'),
+(4, 2, 'maths', 'due', '2026-01-29', 'Assignment', 'Medium', 'Pending', 0, '2026-01-28 15:01:31');
+
 -- --------------------------------------------------------
 
 --
@@ -72,15 +83,18 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL
+  `password` varchar(255) DEFAULT NULL,
+  `gender` varchar(10) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`) VALUES
-(1, 'foo wan yin', 'foowanyin001@gmail.com', '$2y$10$u1HAkw/IKNV1PLSqboNKwulAeDDotRw30Ce8/rxLQCpWjCJVIpzDu');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `gender`, `address`, `created_at`) VALUES
+(2, 'foo wan yin', 'foowanyin001@gmail.com', '$2y$10$FVL9F2d1P86lq8Baldh2keydMKCEcZqmRZ.mywMkmriXxU9vm1srG', 'Female', NULL, '2026-01-28 13:23:59');
 
 --
 -- Indexes for dumped tables
@@ -113,19 +127,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `sticky_notes`
 --
 ALTER TABLE `sticky_notes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -40,3 +40,38 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
     <?php endif; ?>
 </div>
+<script>
+// Apply dark mode site-wide using session value, falling back to localStorage for anonymous pages
+(function(){
+    try {
+        var serverDark = <?php echo (isset($_SESSION['dark_mode']) && $_SESSION['dark_mode']) ? 'true' : 'false'; ?>;
+        var stored = localStorage.getItem('dark_mode');
+
+        // If server explicitly set dark mode, it should override localStorage
+        if (serverDark === true || serverDark === 'true') {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('dark_mode','1');
+        } else {
+            // Server says dark mode is off: ensure we remove class and clear localStorage
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('dark_mode','0');
+            // If no server preference and localStorage explicitly requests dark, respect it
+            if ((stored === '1') && (serverDark === false || serverDark === 'false')) {
+                // only apply if server didn't explicitly set it (rare)
+                // but since serverDark is false, we purposely avoid re-applying
+            }
+        }
+
+        // Inject runtime overrides to ensure cards are dark when class present
+        var cssId = 'dark-mode-runtime-overrides';
+        if (!document.getElementById(cssId)) {
+            var style = document.createElement('style');
+            style.id = cssId;
+            style.innerHTML = '\nbody.dark-mode .card, body.dark-mode .dash-card, body.dark-mode .stat-card, body.dark-mode .sticky, body.dark-mode .hero, body.dark-mode .features .card, body.dark-mode .add-task-container, body.dark-mode .profile-card, body.dark-mode .auth-card, body.dark-mode .filters { background-color: #1e1e1e !important; color: #e0e0e0 !important; border-color: #333 !important; }\nbody.dark-mode .card *, body.dark-mode .dash-card *, body.dark-mode .stat-card *, body.dark-mode .sticky *, body.dark-mode .hero *, body.dark-mode .features .card *, body.dark-mode .add-task-container *, body.dark-mode .profile-card *, body.dark-mode .auth-card * { color: #e0e0e0 !important; background: transparent !important; border-color: #444 !important; }\n';
+            document.head.appendChild(style);
+        }
+    } catch (e) {
+        // ignore
+    }
+})();
+</script>

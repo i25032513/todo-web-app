@@ -1,103 +1,145 @@
 <?php
 session_start();
-include 'db/config.php';
+require 'db/config.php';
 
+// Check login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
+    header('Location: login.php');
+    exit;
 }
 
+// Fetch user data
 $user_id = $_SESSION['user_id'];
-$error = "";
-$success = "";
-
-// Fetch user info
-$stmt = $conn->prepare("SELECT name, email FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
+$sql = "SELECT * FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $user_id);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
-$stmt->close();
 
-// Handle profile update
-if (isset($_POST['update_profile'])) {
+// Handle update
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
+    $gender = trim($_POST['gender']);
 
-    if ($name === "" || $email === "") {
-        $error = "Name and email cannot be empty.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Invalid email format.";
-    } else {
-        // Check if email already exists (except for current user)
-        $check = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
-        $check->bind_param("si", $email, $user_id);
-        $check->execute();
-        $check->store_result();
+    $sql = "UPDATE users SET name = ?, email = ?, gender = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('sssi', $name, $email, $gender, $user_id);
+    $stmt->execute();
 
-        if ($check->num_rows > 0) {
-            $error = "Email already registered.";
-        } else {
-            // Update user profile
-            $stmt = $conn->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $name, $email, $user_id);
-            $stmt->execute();
-            $stmt->close();
+    $message = "Profile updated successfully.";
 
-            $_SESSION['user_name'] = $name;
-            $success = "Profile updated successfully.";
-        }
-        $check->close();
-    }
+    // Refresh user data
+    $user['name'] = $name;
+    $user['email'] = $email;
+    $user['gender'] = $gender;
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Profile</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
 
+// Dark mode
+$dark_mode = $_SESSION['dark_mode'] ?? false;
+?>
+
+<!DOCTYPE html>
+<html lang="en" <?= $dark_mode ? 'class="dark"' : '' ?>>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+body.dark { background-color: #121212; color: #fff; }
+
+.profile-wrapper { max-width: 600px; margin: 40px auto; padding: 20px; }
+.profile-card {
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.profile-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+.profile-card h2 { font-size: 24px; margin-bottom: 20px; color: var(--primary-color); }
+.profile-item { margin-bottom: 15px; font-size: 16px; }
+.profile-item span { font-weight: bold; display: inline-block; width: 120px; }
+
+input, select { width: calc(100% - 130px); padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; }
+input[readonly], select[disabled] { background-color: #f4f4f4; }
+
+.btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; margin-right: 10px; }
+.btn-primary { background: var(--primary-color); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: #6c757d; color: #fff; }
+.btn-secondary:hover { background: #5a6268; }
+
+.message { margin-bottom: 15px; color: green; font-size: 14px; }
+</style>
+</head>
 <body>
+
 <div class="wrapper">
     <?php include 'sidebar.php'; ?>
 
     <div class="main">
-        <div class="header">
-            <h3>My Profile</h3>
-        </div>
+        <div class="profile-wrapper">
+            <div class="profile-card">
+                <h2>My Profile</h2>
 
-        <div class="card auth-card">
-            <?php if ($error): ?>
-                <p style="color: red; margin-bottom: 15px;"><?php echo $error; ?></p>
-            <?php endif; ?>
+                <?php if($message) echo "<p class='message'>$message</p>"; ?>
 
-            <?php if ($success): ?>
-                <p style="color: green; margin-bottom: 15px;"><?php echo $success; ?></p>
-            <?php endif; ?>
+                <form method="POST" id="profileForm">
+                    <div class="profile-item">
+                        <span>Name:</span>
+                        <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" readonly>
+                    </div>
 
-            <!-- Profile Update Form -->
-            <form method="post">
-                <h4>Profile Information</h4>
+                    <div class="profile-item">
+                        <span>Email:</span>
+                        <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" readonly>
+                    </div>
 
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" required value="<?php echo htmlspecialchars($user['name']); ?>">
-                </div>
+                    <div class="profile-item">
+                        <span>Gender:</span>
+                        <select name="gender" disabled>
+                            <option value="">Select</option>
+                            <option value="Male" <?= $user['gender'] === 'Male' ? 'selected' : '' ?>>Male</option>
+                            <option value="Female" <?= $user['gender'] === 'Female' ? 'selected' : '' ?>>Female</option>
+                            <option value="Other" <?= $user['gender'] === 'Other' ? 'selected' : '' ?>>Other</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" required value="<?php echo htmlspecialchars($user['email']); ?>">
-                </div>
+                    <div class="profile-item">
+                        <span>Registered On:</span>
+                        <span><?= date('d M Y', strtotime($user['created_at'] ?? $user['register_date'] ?? '')) ?></span>
+                    </div>
 
-                <button type="submit" name="update_profile" class="btn">Update Profile</button>
-            </form>
-
-            <p style="margin-top: 15px;">
-                <a href="settings.php">Go to Settings</a>
-            </p>
+                    <div class="form-actions" style="margin-top:20px;">
+                        <button type="button" class="btn btn-secondary" id="editBtn">Edit</button>
+                        <button type="submit" name="update_profile" class="btn btn-primary" id="updateBtn" style="display:none;">Update</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+// Toggle Edit Mode
+const editBtn = document.getElementById('editBtn');
+const updateBtn = document.getElementById('updateBtn');
+const form = document.getElementById('profileForm');
+
+editBtn.addEventListener('click', () => {
+    // Enable all inputs/selects
+    form.querySelectorAll('input[name], select[name]').forEach(el => {
+        el.removeAttribute('readonly');
+        el.removeAttribute('disabled');
+    });
+
+    editBtn.style.display = 'none';
+    updateBtn.style.display = 'inline-block';
+});
+</script>
 </body>
 </html>

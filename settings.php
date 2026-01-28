@@ -1,209 +1,218 @@
 <?php
 session_start();
-include 'db/config.php';
+require 'db/config.php';
 
+// Check login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
+    header('Location: login.php');
+    exit;
 }
 
+// Fetch user data
 $user_id = $_SESSION['user_id'];
-$error = "";
-$success = "";
-
-// Fetch user info
-$stmt = $conn->prepare("SELECT name, email FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
+$sql = "SELECT * FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $user_id);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
-$stmt->close();
 
-// Handle profile update
-if (isset($_POST['update_profile'])) {
-    $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
+// Handle form submissions
+$message_password = '';
+$error_password = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if ($name === "" || $email === "") {
-        $error = "Name and email cannot be empty.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Invalid email format.";
-    } else {
-        // Check if email already exists (except for current user)
-        $check = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
-        $check->bind_param("si", $email, $user_id);
-        $check->execute();
-        $check->store_result();
+    // Password update
+    if (isset($_POST['update_password'])) {
+        $current_password = $_POST['current_password'];
+        $new_password_raw = $_POST['new_password'];
 
-        if ($check->num_rows > 0) {
-            $error = "Email already registered.";
+        if (empty($new_password_raw)) {
+            $error_password = "New password cannot be empty.";
+        } elseif (!password_verify($current_password, $user['password'])) {
+            $error_password = "Current password is incorrect.";
         } else {
-            // Update user profile
-            $stmt = $conn->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $name, $email, $user_id);
+            $new_password = password_hash($new_password_raw, PASSWORD_DEFAULT);
+            $sql = "UPDATE users SET password = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('si', $new_password, $user_id);
             $stmt->execute();
-            $stmt->close();
-
-            $_SESSION['user_name'] = $name;
-            $success = "Profile updated successfully.";
+            $message_password = "Password updated successfully.";
         }
-        $check->close();
-    }
-}
 
-// Handle password change
-if (isset($_POST['change_password'])) {
-    $current = $_POST['current_password'];
-    $new = $_POST['new_password'];
-    $confirm = $_POST['confirm_password'];
-
-    if ($new !== $confirm) {
-        $error = "New passwords do not match.";
-    } elseif (strlen($new) < 6) {
-        $error = "New password must be at least 6 characters.";
-    } else {
-        // Verify current password
-        $stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
-        $stmt->bind_param("i", $user_id);
+    // Delete account
+    } elseif (isset($_POST['delete_account'])) {
+        $sql = "DELETE FROM users WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $user_id);
         $stmt->execute();
-        $row = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
+        session_destroy();
+        header('Location: register.php');
+        exit;
 
-        if (!password_verify($current, $row['password'])) {
-            $error = "Current password is incorrect.";
-        } else {
-            // Update password
-            $hashed = password_hash($new, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
-            $stmt->bind_param("si", $hashed, $user_id);
-            $stmt->execute();
-            $stmt->close();
-
-            $success = "Password changed successfully.";
-        }
+    // Dark mode toggle
+    } elseif (isset($_POST['toggle_mode'])) {
+        $_SESSION['dark_mode'] = isset($_POST['dark_mode']) && $_POST['dark_mode'] === '1';
     }
 }
 
-// Handle account deletion
-if (isset($_POST['delete_account'])) {
-    // Delete user's tasks and sticky notes
-    $conn->query("DELETE FROM tasks WHERE user_id = $user_id");
-    $conn->query("DELETE FROM sticky_notes WHERE user_id = $user_id");
-
-    // Delete the user account
-    $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Logout and redirect to home page
-    session_unset();
-    session_destroy();
-    header("Location: index.php");
-    exit();
-}
+// Dark mode state
+$dark_mode = $_SESSION['dark_mode'] ?? false;
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Settings</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
 
+<!DOCTYPE html>
+<html lang="en" <?= $dark_mode ? 'class="dark-mode"' : '' ?>>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+body.dark-mode { background-color: #121212; color: #fff; }
+
+/* Toggle switch */
+.switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+.switch input { display:none; }
+.slider {
+  position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0;
+  background-color: #ccc; transition: .4s; border-radius: 34px;
+}
+.slider:before {
+  position: absolute; content: ""; height:26px; width:26px; left:4px; bottom:4px;
+  background-color:white; transition:.4s; border-radius:50%;
+}
+input:checked + .slider { background-color: var(--primary-color, #007bff); }
+input:checked + .slider:before { transform: translateX(26px); }
+.slider.round { border-radius:34px; }
+.slider.round:before { border-radius:50%; }
+
+/* Cards */
+.settings-wrapper { max-width: 900px; margin: 0 auto; padding: 20px; }
+.settings-wrapper .card { margin-bottom: 30px; padding: 20px; background: var(--card-bg, #fff); border-radius: 12px; box-shadow: var(--shadow-sm); }
+body.dark-mode .card { background: #1e1e1e; }
+
+h4 { margin-bottom: 15px; color: var(--primary-color); }
+.btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; margin-top: 10px; background: var(--primary-color, #007bff); color: #fff; }
+.btn:hover { opacity: 0.9; }
+
+.btn.btn-danger { background: var(--danger-color, #dc3545); color: #fff; }
+.btn.btn-danger:hover { background: #c9302c; }
+
+input[type="password"] { width: 100%; padding: 8px; margin-bottom: 10px; border-radius:6px; border:1px solid #ccc; }
+.form-group { margin-bottom: 15px; }
+
+p.message { color: green; font-size: 14px; margin-bottom:10px; }
+p.error { color: red; font-size: 14px; margin-bottom:10px; }
+
+/* Modal styles */
+#deleteModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; }
+#deleteModal div { background:#fff; padding:30px; border-radius:12px; max-width:400px; width:90%; text-align:center; position:relative; }
+body.dark-mode #deleteModal div { background:#2a2a2a; color:#fff; }
+</style>
+</head>
 <body>
 <div class="wrapper">
-    <?php include 'sidebar.php'; ?>
+<?php include 'sidebar.php'; ?>
 
-    <div class="main">
-        <div class="header">
-            <h3>Settings</h3>
-        </div>
+<div class="main">
+    <div class="header"><h3>Settings</h3></div>
+    <div class="settings-wrapper">
 
+        <!-- Password Section (always visible) -->
         <div class="card auth-card">
-            <?php if ($error): ?>
-                <p style="color: red; margin-bottom: 15px;"><?php echo $error; ?></p>
-            <?php endif; ?>
-
-            <?php if ($success): ?>
-                <p style="color: green; margin-bottom: 15px;"><?php echo $success; ?></p>
-            <?php endif; ?>
-
-            <!-- Profile Update Form -->
-            <form method="post">
-                <h4>Profile Information</h4>
-
+            <h4>Change Password</h4>
+            <?php 
+            if ($message_password) echo "<p class='message'>$message_password</p>";
+            if ($error_password) echo "<p class='error'>$error_password</p>";
+            ?>
+            <form method="POST">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" required value="<?php echo htmlspecialchars($user['name']); ?>">
+                    <label for="current_password">Current Password:</label>
+                    <input type="password" id="current_password" name="current_password">
                 </div>
 
                 <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" required value="<?php echo htmlspecialchars($user['email']); ?>">
+                    <label for="new_password">New Password:</label>
+                    <input type="password" id="new_password" name="new_password">
                 </div>
 
-                <button type="submit" name="update_profile" class="btn">Update Profile</button>
-            </form>
-
-            <hr style="margin:25px 0;">
-
-            <!-- Password Change Form -->
-            <form method="post">
-                <h4>Change Password</h4>
-
-                <div class="form-group">
-                    <label>Current Password</label>
-                    <input type="password" name="current_password" required>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                    <input type="checkbox" id="show_password_checkbox" style="width:16px; height:16px; cursor:pointer;">
+                    <label for="show_password_checkbox" style="cursor:pointer; margin:0; font-size:14px;">Show Password</label>
                 </div>
 
-                <div class="form-group">
-                    <label>New Password</label>
-                    <input type="password" name="new_password" required minlength="6">
-                </div>
-
-                <div class="form-group">
-                    <label>Confirm New Password</label>
-                    <input type="password" name="confirm_password" required minlength="6">
-                </div>
-
-                <button type="submit" name="change_password" class="btn">Change Password</button>
-            </form>
-
-            <hr style="margin:25px 0;">
-
-            <!-- Dark Mode Toggle Button -->
-            <button type="button" onclick="toggleDarkMode()" class="btn">
-                Toggle Dark Mode
-            </button>
-
-            <hr style="margin:25px 0;">
-
-            <!-- Delete Account Form -->
-            <form method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
-                <button type="submit" name="delete_account" class="btn" style="background-color: #b91c1c; color: white;">
-                    Delete Account
-                </button>
+                <button type="submit" name="update_password" class="btn">Update Password</button>
             </form>
         </div>
+
+        <!-- Dark Mode -->
+        <div class="card auth-card">
+            <h4>Dark Mode</h4>
+            <form method="POST">
+                <label class="switch">
+                    <input type="checkbox" name="dark_mode" value="1" <?= $dark_mode ? 'checked' : '' ?> onchange="this.form.submit()">
+                    <span class="slider round"></span>
+                </label>
+                <p style="margin-top:10px; font-size:14px;">Dark mode is <?= $dark_mode ? 'ON' : 'OFF' ?></p>
+                <input type="hidden" name="toggle_mode">
+            </form>
+        </div>
+
+        <!-- Delete Account -->
+        <div class="card auth-card">
+            <h4>Delete Account</h4>
+            <p style="color: var(--danger-color, #dc3545); font-size:14px; margin-bottom:15px;">
+                Warning: This action cannot be undone.
+            </p>
+            <button type="button" class="btn btn-danger" id="deleteAccountBtn">Delete Account</button>
+        </div>
+
+        <!-- Custom Delete Modal -->
+        <div id="deleteModal">
+            <div>
+                <h4 style="margin-bottom:20px; color:#dc3545;">Confirm Deletion</h4>
+                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                <div style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
+                    <form method="POST" style="margin:0;">
+                        <button type="submit" name="delete_account" class="btn btn-danger">Yes, Delete</button>
+                    </form>
+                    <button type="button" id="cancelDelete" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+</div>
 
-<!-- Dark Mode Toggle Script -->
 <script>
-// Toggle dark mode
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    let darkModeStatus = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', darkModeStatus);
-}
+// Show password toggle
+const currentInput = document.getElementById('current_password');
+const newInput = document.getElementById('new_password');
+const showCheckbox = document.getElementById('show_password_checkbox');
+showCheckbox.addEventListener('change', () => {
+    const type = showCheckbox.checked ? 'text' : 'password';
+    currentInput.type = type;
+    newInput.type = type;
+});
 
-// Check localStorage for dark mode preference
-window.onload = function() {
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
+// Delete account modal
+const deleteBtn = document.getElementById('deleteAccountBtn');
+const deleteModal = document.getElementById('deleteModal');
+const cancelBtn = document.getElementById('cancelDelete');
+
+deleteBtn.addEventListener('click', () => {
+    deleteModal.style.display = 'flex';
+});
+
+cancelBtn.addEventListener('click', () => {
+    deleteModal.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target === deleteModal) {
+        deleteModal.style.display = 'none';
     }
-};
+});
 </script>
-
 </body>
 </html>

@@ -589,33 +589,290 @@ body {
 /* Dark Mode */
 body.dark-mode {
     background-color: #121212;
-    color: #ffffff;
+    color: #e0e0e0;
 }
 
 body.dark-mode .sidebar {
-    background-color: #2d2d2d;
-    color: #ffffff;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-right-color: #333;
+}
+
+body.dark-mode .sidebar h2 {
+    color: #64b5f6;
+}
+
+body.dark-mode .sidebar ul li a {
+    color: #b0bec5;
+}
+
+body.dark-mode .sidebar ul li a:hover,
+body.dark-mode .sidebar ul li a.active {
+    background: #263238;
+    color: #64b5f6;
 }
 
 body.dark-mode .main {
-    background-color: #1e1e1e;
-    color: #ffffff;
+    background-color: #121212;
+    color: #e0e0e0;
 }
 
 body.dark-mode .card {
-    background-color: #333;
+    background-color: #1e1e1e;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    color: #e0e0e0;
 }
 
-/* Additional adjustments */
+/* Specific dashboard / profile / add-task card overrides */
+body.dark-mode .dash-card,
+body.dark-mode .dash-card-large,
+body.dark-mode .stat-card,
+body.dark-mode .sticky,
+body.dark-mode .hero,
+body.dark-mode .features .card,
+body.dark-mode .add-task-container,
+body.dark-mode .profile-card,
+body.dark-mode .auth-card,
+body.dark-mode .filters,
+body.dark-mode .stat-mini,
+body.dark-mode .stat-card {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+    border-color: #333 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
+}
+
+body.dark-mode .dash-card *,
+body.dark-mode .stat-card *,
+body.dark-mode .sticky *,
+body.dark-mode .hero *,
+body.dark-mode .features .card *,
+body.dark-mode .add-task-container *,
+body.dark-mode .profile-card *,
+body.dark-mode .auth-card *,
+body.dark-mode .filters * {
+    color: #e0e0e0 !important;
+    background: transparent !important;
+    border-color: #444 !important;
+}
+
+/* Tables inside dashboard */
+body.dark-mode .dash-table th,
+body.dark-mode .dash-table td {
+    color: #e0e0e0 !important;
+    border-color: #333 !important;
+}
+
+body.dark-mode .card h1,
+body.dark-mode .card h2,
+body.dark-mode .card h3,
+body.dark-mode .card h4,
+body.dark-mode .card h5,
+body.dark-mode .card h6 {
+    color: #64b5f6;
+}
+
+body.dark-mode .header {
+    color: #e0e0e0;
+}
+
+body.dark-mode .header h1,
+body.dark-mode .header h2,
+body.dark-mode .header h3 {
+    color: #64b5f6;
+}
+
 body.dark-mode a {
-    color: #ffcc00;
+    color: #64b5f6;
+}
+
+body.dark-mode a:hover {
+    color: #90caf9;
 }
 
 body.dark-mode input,
 body.dark-mode textarea,
 body.dark-mode select {
     background-color: #2d2d2d;
-    color: #ffffff;
+    color: #e0e0e0;
     border: 1px solid #444;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: #888;
+}
+
+body.dark-mode label {
+    color: #b0bec5;
+}
+
+body.dark-mode .form-group label {
+    color: #b0bec5;
+}
+
+body.dark-mode .btn {
+    background-color: #1976d2;
+    color: #ffffff;
+}
+
+body.dark-mode .btn:hover {
+    background-color: #1565c0;
+}
+
+body.dark-mode .btn-secondary {
+    background-color: #555;
+    color: #ffffff;
+}
+
+body.dark-mode .btn-secondary:hover {
+    background-color: #666;
+}
+
+body.dark-mode p {
+    color: #e0e0e0;
+}
+
+body.dark-mode .user-info {
+    color: #b0bec5;
+    border-top-color: #333;
+}
+
+/* Additional dark mode overrides for all text elements */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+    color: #e0e0e0;
+}
+
+body.dark-mode td,
+body.dark-mode th {
+    color: #e0e0e0;
+    border-color: #333;
+}
+
+body.dark-mode table {
+    background-color: #1e1e1e;
+}
+
+body.dark-mode span {
+    color: #e0e0e0;
+}
+
+body.dark-mode .muted,
+body.dark-mode .text-muted {
+    color: #b0bec5 !important;
+}
+
+body.dark-mode .success,
+body.dark-mode .completed-meta {
+    color: #81c784 !important;
+}
+
+body.dark-mode .warning {
+    color: #ffb74d !important;
+}
+
+body.dark-mode .danger {
+    color: #ef5350 !important;
+}
+
+body.dark-mode .info {
+    color: #64b5f6 !important;
+}
+
+body.dark-mode input::placeholder {
+    color: #888 !important;
+}
+
+body.dark-mode textarea::placeholder {
+    color: #888 !important;
+}
+
+body.dark-mode select {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+
+body.dark-mode option {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+
+body.dark-mode .btn-primary {
+    background-color: #1976d2;
+    color: #ffffff;
+}
+
+body.dark-mode .btn-primary:hover {
+    background-color: #1565c0;
+}
+
+body.dark-mode .btn-danger {
+    background-color: #c62828;
+    color: #ffffff;
+}
+
+body.dark-mode .btn-danger:hover {
+    background-color: #b71c1c;
+}
+
+body.dark-mode .form-control {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #444;
+}
+
+body.dark-mode .modal,
+body.dark-mode .modal-content {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+body.dark-mode .modal-header {
+    background-color: #2a2a2a;
+    border-color: #333;
+}
+
+body.dark-mode .modal-footer {
+    background-color: #2a2a2a;
+    border-color: #333;
+}
+
+/* Aggressive dark mode override for all card-like elements and their children */
+body.dark-mode .card, 
+body.dark-mode .auth-card, 
+body.dark-mode .profile-card, 
+body.dark-mode .add-task-container, 
+body.dark-mode .settings-card {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+}
+body.dark-mode .card *,
+body.dark-mode .auth-card *,
+body.dark-mode .profile-card *,
+body.dark-mode .add-task-container *,
+body.dark-mode .settings-card * {
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+    background: transparent !important;
+}
+
+/* Keep buttons colored in dark mode (don't force them to gray) */
+body.dark-mode .btn,
+body.dark-mode .btn-primary {
+    background: var(--primary-color) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(67,97,238,0.3) !important;
+}
+body.dark-mode .btn-secondary {
+    background: #e9ecef !important;
+    color: var(--text-color) !important;
+}
+body.dark-mode .btn-danger {
+    background: var(--danger-color) !important;
+    color: #ffffff !important;
 }
