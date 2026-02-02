@@ -13,7 +13,9 @@ $task_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($task_id > 0) {
     $stmt = $conn->prepare("UPDATE tasks SET is_archived = 1 WHERE id = ? AND user_id = ?");
     $stmt->bind_param("ii", $task_id, $user_id);
-    $stmt->execute();
+    if ($stmt->execute()) {
+        $_SESSION['task_success'] = 'Task archived successfully! You can restore it from the Archive page.';
+    }
     $stmt->close();
 }
 
