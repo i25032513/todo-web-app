@@ -54,6 +54,15 @@ $stmt->close();
             border-radius: 16px;
             box-shadow: 0 1px 10px rgba(0,0,0,0.08);
         }
+
+        body.dark-mode .header h3 {
+            color: #ffffff;
+        }
+
+        body.dark-mode #calendar {
+            background: #1e1e1e;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 

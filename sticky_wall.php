@@ -654,6 +654,21 @@ body.dark-mode .modal-content select:focus {
     </div>
 </div>
 
+<!-- Custom Delete Modal -->
+<div id="deleteStickyModal" class="modal">
+    <div class="modal-content">
+        <h4 style="margin-bottom:20px; color:#dc3545;">Confirm Deletion</h4>
+        <p>Are you sure you want to delete this sticky note? This action cannot be undone.</p>
+        <div style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
+            <form method="POST" id="deleteStickyForm" style="margin:0;">
+                <input type="hidden" name="note_id" id="deleteStickyNoteId">
+                <button type="submit" name="delete_note" class="btn btn-danger">Yes, Delete</button>
+            </form>
+            <button type="button" id="cancelStickyDelete" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function openAdd() {
     document.getElementById('addModal').style.display = 'flex';
@@ -683,29 +698,13 @@ function closeAll() {
 /* Delete via X icon */
 function confirmDelete(event, id) {
     event.stopPropagation();
-    if (confirm("Delete this sticky note? This action cannot be undone.")) {
-        const form = document.createElement('form');
-        form.method = 'post';
-        form.innerHTML = `
-            <input type="hidden" name="note_id" value="${id}">
-            <input type="hidden" name="delete_note" value="1">
-        `;
-        document.body.appendChild(form);
-        form.submit();
-    }
+    openStickyDeleteModal(id);
 }
 
 /* Delete from edit modal */
 function confirmDeleteFromModal() {
-    if (confirm("Delete this sticky note? This action cannot be undone.")) {
-        const form = document.querySelector('#editModal form');
-        const deleteInput = document.createElement('input');
-        deleteInput.type = 'hidden';
-        deleteInput.name = 'delete_note';
-        deleteInput.value = '1';
-        form.appendChild(deleteInput);
-        form.submit();
-    }
+    const noteId = document.getElementById('note_id').value;
+    openStickyDeleteModal(noteId);
 }
 
 /* Close modal on ESC key */
@@ -740,6 +739,27 @@ const flashMessage = document.getElementById('flashMessage');
 if (flashMessage) {
     setTimeout(() => closeFlash(), 5000);
 }
+
+// Delete sticky note modal
+const deleteStickyModal = document.getElementById('deleteStickyModal');
+const cancelStickyDelete = document.getElementById('cancelStickyDelete');
+const deleteStickyForm = document.getElementById('deleteStickyForm');
+const deleteStickyNoteId = document.getElementById('deleteStickyNoteId');
+
+function openStickyDeleteModal(noteId) {
+    deleteStickyNoteId.value = noteId;
+    deleteStickyModal.style.display = 'flex';
+}
+
+cancelStickyDelete.addEventListener('click', () => {
+    deleteStickyModal.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target === deleteStickyModal) {
+        deleteStickyModal.style.display = 'none';
+    }
+});
 </script>
 
 </body>

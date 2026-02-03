@@ -147,6 +147,97 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
             margin-bottom: 20px;
         }
 
+        /* Archive cards should keep light-mode text colors in dark mode */
+        body.dark-mode .archive-sticky {
+            color: #333 !important;
+        }
+
+        body.dark-mode .archive-sticky strong {
+            color: #333 !important;
+        }
+
+        body.dark-mode .archive-sticky p {
+            color: #555 !important;
+        }
+
+        body.dark-mode .archive-sticky .status {
+            color: #fff !important;
+        }
+
+        body.dark-mode .archive-sticky .status.ongoing {
+            background: #e3f2fd !important;
+            color: #1976d2 !important;
+        }
+
+        body.dark-mode .archive-sticky .status.pending {
+            background: #fff3e0 !important;
+            color: #f57c00 !important;
+        }
+
+        body.dark-mode .archive-sticky .status.completed {
+            background: #e8f5e9 !important;
+            color: #2e7d32 !important;
+        }
+
+        body.dark-mode .archive-sticky .archived-badge {
+            background: rgba(0, 0, 0, 0.35) !important;
+            color: #fff !important;
+        }
+
+        body.dark-mode .archive-sticky .restore-btn,
+        body.dark-mode .archive-sticky .delete-btn {
+            background: inherit;
+        }
+
+        body.dark-mode .archive-sticky .restore-btn {
+            background: var(--success-color) !important;
+            color: #fff !important;
+            border-color: transparent !important;
+        }
+
+        body.dark-mode .archive-sticky .delete-btn {
+            background: var(--danger-color) !important;
+            color: #fff !important;
+            border-color: transparent !important;
+        }
+
+        body.dark-mode .archive-sticky .restore-btn:hover {
+            background: #25a89a !important;
+        }
+
+        body.dark-mode .archive-sticky .delete-btn:hover {
+            background: #c41828 !important;
+        }
+
+        /* Archive delete modal (dark mode) */
+        body.dark-mode #archiveDeleteModal > div {
+            background: #2a2a2a;
+            color: #fff;
+        }
+
+        body.dark-mode .empty-archive {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .empty-archive h4,
+        body.dark-mode .empty-archive p {
+            color: #e0e0e0;
+        }
+
+        /* Archive delete modal */
+        #archiveDeleteModal .archive-delete-content {
+            background: #fff;
+            color: #222;
+        }
+
+        body.dark-mode #archiveDeleteModal .archive-delete-content {
+            background: #2a2a2a !important;
+            color: #fff !important;
+        }
+
         .flash-message {
             background: var(--success-color);
             color: white;
@@ -189,10 +280,10 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
             justify-content: center;
         }
     </style>
+
 </head>
 
-<body>
-
+<body class="archive-page">
     <div class="wrapper">
         <?php include 'sidebar.php'; ?>
 
@@ -212,7 +303,7 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
             <?php if ($tasks->num_rows > 0): ?>
                 <div class="sticky-container">
                     <?php while ($task = $tasks->fetch_assoc()): ?>
-                        <div class="sticky <?php echo $colors[$task['category']] ?? 'yellow'; ?>" style="opacity: 0.8; position: relative;">
+                        <div class="sticky archive-sticky <?php echo $colors[$task['category']] ?? 'yellow'; ?>" style="opacity: 0.8; position: relative;">
                             <span class="archived-badge">Archived</span>
                             <strong>
                                 <?php echo htmlspecialchars($task['title']); ?>
@@ -232,7 +323,7 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
                             <div class="sticky-actions">
                                 <a href="archive.php?restore=<?php echo $task['id']; ?>" class="restore-btn">Restore</a>
                                 <a href="delete_task.php?id=<?php echo $task['id']; ?>" class="delete-btn"
-                                    onclick="return confirm('Permanently delete this task?');">Delete</a>
+                                    onclick="openArchiveDeleteModal(event, <?php echo $task['id']; ?>)">Delete</a>
                             </div>
                         </div>
                     <?php endwhile; ?>
@@ -248,6 +339,21 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
         </div>
     </div>
 
+    <!-- Custom Delete Modal -->
+    <div id="archiveDeleteModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+        <div class="archive-delete-content" style="padding:30px; border-radius:12px; max-width:400px; width:90%; text-align:center; position:relative;">
+            <h4 style="margin-bottom:20px; color:#dc3545;">Confirm Deletion</h4>
+            <p>Are you sure you want to permanently delete this task?</p>
+            <div style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
+                <form method="GET" action="delete_task.php" id="archiveDeleteForm" style="margin:0;">
+                    <input type="hidden" name="id" id="archiveDeleteId">
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+                <button type="button" id="cancelArchiveDelete" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function closeFlash() {
             const flash = document.getElementById('flashMessage');
@@ -258,6 +364,27 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
                 setTimeout(() => flash.remove(), 300);
             }
         }
+
+        // Archive delete modal
+        const archiveDeleteModal = document.getElementById('archiveDeleteModal');
+        const archiveDeleteId = document.getElementById('archiveDeleteId');
+        const cancelArchiveDelete = document.getElementById('cancelArchiveDelete');
+
+        function openArchiveDeleteModal(event, id) {
+            event.preventDefault();
+            archiveDeleteId.value = id;
+            archiveDeleteModal.style.display = 'flex';
+        }
+
+        cancelArchiveDelete.addEventListener('click', () => {
+            archiveDeleteModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === archiveDeleteModal) {
+                archiveDeleteModal.style.display = 'none';
+            }
+        });
 
         // Auto-hide flash message after 5 seconds
         const flashMessage = document.getElementById('flashMessage');

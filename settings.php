@@ -97,6 +97,13 @@ h4 { margin-bottom: 15px; color: var(--primary-color); }
 .btn.btn-danger { background: var(--danger-color, #dc3545); color: #fff; }
 .btn.btn-danger:hover { background: #c9302c; }
 
+body.dark-mode .btn { background: var(--primary-color, #007bff); color: #fff; }
+body.dark-mode .btn:hover { opacity: 0.9; }
+body.dark-mode .btn.btn-danger { background: var(--danger-color, #dc3545); color: #fff; }
+body.dark-mode .btn.btn-danger:hover { background: #c9302c; }
+body.dark-mode .btn.btn-secondary { background: #e9ecef; color: var(--text-color); }
+body.dark-mode .btn.btn-secondary:hover { background: #dfe3e6; }
+
 input[type="password"] { width: 100%; padding: 8px; margin-bottom: 10px; border-radius:6px; border:1px solid #ccc; }
 .form-group { margin-bottom: 15px; }
 

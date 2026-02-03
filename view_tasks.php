@@ -551,6 +551,23 @@ function getDueDateLabel($due_date, $status) {
             transition: width 0.3s ease;
         }
 
+        /* Page-scoped dark-mode overrides for progress bar (keeps archive untouched) */
+        body.dark-mode:not(.archive-page) .progress-bar-container {
+            background: rgba(255,255,255,0.04) !important;
+            border-radius: 10px !important;
+            height: 8px !important;
+            overflow: hidden !important;
+            margin-top: 5px !important;
+            border: 1px solid rgba(255,255,255,0.04) !important;
+        }
+
+        body.dark-mode:not(.archive-page) .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color)) !important;
+            height: 100% !important;
+            border-radius: 10px !important;
+            transition: width 0.3s ease !important;
+        }
+
         /* Checkbox for completion */
         .task-checkbox {
             width: 22px;
@@ -675,6 +692,11 @@ function getDueDateLabel($due_date, $status) {
             background: #333;
             border-color: #444;
             color: #fff;
+        }
+
+        body.dark-mode .category-badge {
+            color: #1f2937;
+            background: #e5e7eb;
         }
 
         /* Flash Success Banner */
@@ -805,7 +827,7 @@ function getDueDateLabel($due_date, $status) {
                     </span>
                 </div>
                 <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: <?php echo $stats['total'] > 0 ? ($stats['completed'] / $stats['total']) * 100 : 0; ?>%;"></div>
+                    <div class="progress-bar" style="width: <?php echo $stats['total'] > 0 ? ($stats['completed'] / $stats['total']) * 100 : 0; ?>%; background: linear-gradient(90deg, var(--primary-color), var(--success-color)) !important;"></div>
                 </div>
             </div>
             <?php endif; ?>

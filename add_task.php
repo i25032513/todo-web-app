@@ -179,6 +179,34 @@ if (isset($_SESSION['task_success'])) {
             background: #c8e6c9;
         }
 
+        body.dark-mode .btn {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        body.dark-mode .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        body.dark-mode .btn-secondary {
+            background: #e9ecef;
+            color: var(--text-color);
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: #dfe3e6;
+        }
+
+        body.dark-mode .btn-add-another {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        body.dark-mode .btn-add-another:hover {
+            background: #c8e6c9;
+        }
+
         .char-count {
             font-size: 11px;
             color: var(--text-muted);

@@ -307,6 +307,64 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
             background: #e7f5ff;
             color: #0c5da5;
         }
+
+        /* Dark mode overrides for day/task cards */
+        body.dark-mode .day-section {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            border-left-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .day-section.today {
+            background: #1f2937;
+        }
+
+        body.dark-mode .day-header {
+            border-bottom-color: #333;
+        }
+
+        body.dark-mode .day-title,
+        body.dark-mode .day-title span {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .task-count {
+            background: #2a2a2a;
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .mini-task {
+            background: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .mini-task:hover {
+            background: #334155;
+        }
+
+        body.dark-mode .mini-task .task-title {
+            color: #e5e7eb;
+        }
+
+        body.dark-mode .mini-task .task-meta {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .empty-day {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .weekly-card {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border-color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .weekly-card * {
+            color: #e0e0e0;
+        }
     </style>
 </head>
 <body>
@@ -322,26 +380,26 @@ $colors = ['Assignment' => 'yellow', 'Discussion' => 'blue', 'Club Activity' => 
     </div>
 
     <div class="week-stats">
-        <div class="week-stat-card">
+        <div class="week-stat-card weekly-card">
             <h4><?php echo $stats['total'] ?? 0; ?></h4>
             <p>Total Tasks</p>
         </div>
-        <div class="week-stat-card completed">
+        <div class="week-stat-card completed weekly-card">
             <h4><?php echo $stats['completed'] ?? 0; ?></h4>
             <p>Completed</p>
         </div>
-        <div class="week-stat-card ongoing">
+        <div class="week-stat-card ongoing weekly-card">
             <h4><?php echo $stats['ongoing'] ?? 0; ?></h4>
             <p>On-going</p>
         </div>
-        <div class="week-stat-card pending">
+        <div class="week-stat-card pending weekly-card">
             <h4><?php echo $stats['pending'] ?? 0; ?></h4>
             <p>Pending</p>
         </div>
     </div>
 
     <?php if (empty($tasksByDay)): ?>
-        <div class="empty-week">
+        <div class="empty-week weekly-card">
             <div class="empty-week-icon">📅</div>
             <h4>No Tasks This Week</h4>
             <p>You don't have any tasks due this week. Enjoy your free time or plan ahead!</p>

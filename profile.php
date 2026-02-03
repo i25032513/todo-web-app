@@ -73,6 +73,11 @@ input[readonly], select[disabled] { background-color: #f4f4f4; }
 .btn-secondary { background: #6c757d; color: #fff; }
 .btn-secondary:hover { background: #5a6268; }
 
+html.dark .btn-primary { background: var(--primary-color); color: #fff; }
+html.dark .btn-primary:hover { background: var(--primary-dark); }
+html.dark .btn-secondary { background: #6c757d; color: #fff; }
+html.dark .btn-secondary:hover { background: #5a6268; }
+
 .message { margin-bottom: 15px; color: green; font-size: 14px; }
 </style>
 </head>

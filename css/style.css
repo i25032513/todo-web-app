@@ -711,21 +711,21 @@ body.dark-mode .form-group label {
     color: #b0bec5;
 }
 
-body.dark-mode .btn {
+body.dark-mode:not(.archive-page) .btn {
     background-color: #1976d2;
     color: #ffffff;
 }
 
-body.dark-mode .btn:hover {
+body.dark-mode:not(.archive-page) .btn:hover {
     background-color: #1565c0;
 }
 
-body.dark-mode .btn-secondary {
+body.dark-mode:not(.archive-page) .btn-secondary {
     background-color: #555;
     color: #ffffff;
 }
 
-body.dark-mode .btn-secondary:hover {
+body.dark-mode:not(.archive-page) .btn-secondary:hover {
     background-color: #666;
 }
 
@@ -778,6 +778,13 @@ body.dark-mode .warning {
 
 body.dark-mode .danger {
     color: #ef5350 !important;
+}
+
+/* Keep dashboard "Pending" status styled like light mode in dark mode (exclude archive) */
+body.dark-mode:not(.archive-page) .status.pending {
+    background: #fff3e0 !important; /* same as light mode */
+    color: #f57c00 !important;     /* same accent color */
+    box-shadow: none !important;
 }
 
 body.dark-mode .info {
@@ -862,17 +869,17 @@ body.dark-mode .settings-card * {
 }
 
 /* Keep buttons colored in dark mode (don't force them to gray) */
-body.dark-mode .btn,
-body.dark-mode .btn-primary {
+body.dark-mode:not(.archive-page) .btn,
+body.dark-mode:not(.archive-page) .btn-primary {
     background: var(--primary-color) !important;
     color: #ffffff !important;
     box-shadow: 0 2px 6px rgba(67,97,238,0.3) !important;
 }
-body.dark-mode .btn-secondary {
+body.dark-mode:not(.archive-page) .btn-secondary {
     background: #e9ecef !important;
     color: var(--text-color) !important;
 }
-body.dark-mode .btn-danger {
+body.dark-mode:not(.archive-page) .btn-danger {
     background: var(--danger-color) !important;
     color: #ffffff !important;
 }
