@@ -17,7 +17,8 @@ if (isset($_POST['submit'])) {
     $priority = $_POST['priority'];
     $due_date = $_POST['due_date'];
     $status = $_POST['status'];
-    $add_another = isset($_POST['add_another']) ? true : false;
+    // Determine whether the user clicked "Create & Add Another" (value '1')
+    $add_another = (isset($_POST['add_another']) && $_POST['add_another'] === '1') ? true : false;
 
     $stmt = $conn->prepare("INSERT INTO tasks (user_id, title, description, category, priority, due_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("issssss", $user_id, $title, $description, $category, $priority, $due_date, $status);
